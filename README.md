@@ -1,24 +1,24 @@
 ## About
 
-This is a memcache client library for the Go programming language
+This is a memcache client library for the Go programming language with OpenTracing support
 (http://golang.org/).
 
 ## Installing
 
 ### Using *go get*
 
-    $ go get github.com/orijtech/gomemcache/memcache
+    $ go get github.com/aita/gomemcache/memcache
 
 After this command *gomemcache* is ready to use. Its source will be in:
 
-    $GOPATH/src/github.com/orijtech/gomemcache/memcache
+    $GOPATH/src/github.com/aita/gomemcache/memcache
 
 ## Example
 
     import (
             "context"
 
-            "github.com/orijtech/gomemcache/memcache"
+            "github.com/aita/gomemcache/memcache"
     )
 
     func main() {
@@ -30,45 +30,11 @@ After this command *gomemcache* is ready to use. Its source will be in:
          ...
     }
 
-## Example with distributed tracing and monitoring enabled
-
-    import (
-        "context"
-
-        "github.com/orijtech/gomemcache/memcache"
-
-        "go.opencensus.io/trace"
-        "go.opencensus.io/stats/view"
-    )
-
-    func main() {
-        if err := view.Register(memcache.AllViews...); err != nil {
-            log.Fatalf("Failed to register the monitoring views: %v", err)
-        }
-
-        ctx := context.Background()
-
-        mc := memcache.New("10.0.0.1:11211", "10.0.0.2:11211", "10.0.0.3:11212")
-        mc.Set(ctx, &memcache.Item{Key: "foo", Value: []byte("my value")})
-
-         it, err := mc.Get(ctx, "foo")
-         ...
-    }
-
-## Metrics collected
-
-Metric|Metric Prefix|Unit|Tags
----|---|---|---
-Latencies of the various methods|"gomemcache/latency"|"ms"|"method", "status", "error"
-The various method calls|"gomemcache/calls"|"1"|"method", "status", "error"
-Key Lengths|"gomemcache/key_length"|"By"|"method"
-Value Lengths|"gomemcache/value_length"|"By"|"method"
-
 ## Full docs, see:
 
-See https://godoc.org/github.com/orijtech/gomemcache/memcache
+See https://godoc.org/github.com/aita/gomemcache/memcache
 
 Or run:
 
-    $ godoc github.com/orijtech/gomemcache/memcache
+    $ godoc github.com/aita/gomemcache/memcache
 

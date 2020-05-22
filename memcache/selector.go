@@ -23,7 +23,8 @@ import (
 	"strings"
 	"sync"
 
-	"go.opencensus.io/trace"
+	"github.com/opentracing/opentracing-go"
+	"github.com/opentracing/opentracing-go/ext"
 )
 
 // ServerSelector is the interface that selects a memcache server
@@ -94,14 +95,12 @@ func (ss *ServerList) SetServers(servers ...string) error {
 
 // Each iterates over each server calling the given function
 func (ss *ServerList) Each(ctx context.Context, f func(context.Context, net.Addr) error) error {
-	ctx, span := trace.StartSpan(ctx, "memcache.(*ServerList).Each")
-	defer span.End()
+	span, ctx := opentracing.StartSpanFromContext(ctx, "memcache.(*ServerList).Each")
+	defer span.Finish()
+	ext.DBType.Set(span, "memcached")
 
 	ss.mu.RLock()
 	defer ss.mu.RUnlock()
-	span.Annotate([]trace.Attribute{
-		trace.Int64Attribute("n", int64(len(ss.addrs))),
-	}, "Iterating over addresses")
 	for _, a := range ss.addrs {
 		if err := f(ctx, a); nil != err {
 			return err
